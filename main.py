@@ -151,8 +151,8 @@ def get_current_data():
         # Schedule UI updates on the main thread
         ui.update(lambda: update_ui_get_data(output))
 
-    except subprocess.TimeoutExpired:
-        ui.update(lambda: notify_error("No data received within 30 seconds. Operation timed out."))
+    #except subprocess.TimeoutExpired:
+     #   ui.update(lambda: notify_error("No data received within 30 seconds. Operation timed out."))
 
     except Exception as e:
         ui.update(lambda: notify_exception(f"An error occurred: {e}"))
@@ -169,7 +169,7 @@ def update_ui_get_data(output):
     current_power_label.set_text(f"Power: {power_value}")
 
     ui.notify(f"Frequency: {frequency_value}\nBandwidth: {bandwidth_value}\nPower: {power_value}", type='info')
-    
+
 # Define UI components
 with ui.column().classes('items-stretch') as main_column:
     #ui.label('MECSware Interface').classes('text-h4')
