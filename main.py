@@ -1,4 +1,4 @@
-from nicegui import ui
+from nicegui import ui, run_on_ui_thread
 
 import subprocess
 import threading
@@ -65,18 +65,30 @@ def execute_put_command():
         result = subprocess.run(command, shell=True, capture_output=True, text=True, timeout=30)
         output = result.stdout
 
-        # Update the output text widget with the result
-        output_text.set_value(output)
+        # Schedule UI updates on the main thread
+        @run_on_ui_thread
+        def update_ui():
+            output_text.set_value(output)
+            if "data received" in output.lower():
+                output_text.set_value("")
 
-        # Check if the data was received successfully
-        if "data received" in output.lower():
-            output_text.set_value("")
+        update_ui()
+
     except subprocess.TimeoutExpired:
-        ui.notify("No data received within 30 seconds. Operation timed out.", type='error')
-        clear_console()
+        @run_on_ui_thread
+        def notify_error():
+            ui.notify("No data received within 30 seconds. Operation timed out.", type='error')
+            clear_console()
+
+        notify_error()
+
     except Exception as e:
-        ui.notify(f"An error occurred: {e}", type='error')
-        clear_console()
+        @run_on_ui_thread
+        def notify_exception():
+            ui.notify(f"An error occurred: {e}", type='error')
+            clear_console()
+
+        notify_exception()
 
 def ping_test():
     """Function to execute a ping test to the provided IP address."""
@@ -86,20 +98,33 @@ def ping_test():
         clear_console()
         # Run the ping command
         result = subprocess.run(['ping', '-c', '1', ip_address], capture_output=True, text=True)
-        output_text.set_value(result.stdout)
+        output = result.stdout
 
-        # Show the ping result in a notification
-        if result.returncode == 0:
-            ui.notify("Ping successful!", type='info')
-        else:
-            ui.notify("Ping failed!", type='error')
+        # Schedule UI updates on the main thread
+        @run_on_ui_thread
+        def update_ui():
+            output_text.set_value(output)
+            if result.returncode == 0:
+                ui.notify("Ping successful!", type='info')
+            else:
+                ui.notify("Ping failed!", type='error')
+
+        update_ui()
+
     except Exception as e:
-        ui.notify(f"An error occurred: {e}", type='error')
+        @run_on_ui_thread
+        def notify_exception():
+            ui.notify(f"An error occurred: {e}", type='error')
+
+        notify_exception()
 
 def submit_command():
     """Function to submit a command and show a confirmation message."""
     trigger_terminal_command_submit_data()
-    ui.notify("Terminal command executed successfully.", type='info')
+    @run_on_ui_thread
+    def notify_success():
+        ui.notify("Terminal command executed successfully.", type='info')
+    notify_success()
 
 def ping_command():
     """Function to start the ping test in a separate thread."""
@@ -131,27 +156,38 @@ def get_current_data():
         result = subprocess.run(command, shell=True, capture_output=True, text=True, timeout=30)
         output = result.stdout
 
-        # Update the output text widget with the result
-        output_text.set_value(output)
+        # Schedule UI updates on the main thread
+        @run_on_ui_thread
+        def update_ui():
+            output_text.set_value(output)
+            data = json.loads(output)
+            frequency_value = data.get("frequency", "")
+            bandwidth_value = data.get("bandwidth", "")
+            power_value = data.get("tx_power", "")
 
-        # Parse the JSON response
-        data = json.loads(output)
-        frequency_value = data.get("frequency", "")
-        bandwidth_value = data.get("bandwidth", "")
-        power_value = data.get("tx_power", "")
+            current_freq_label.set_text(f"Frequency: {frequency_value}")
+            current_bw_label.set_text(f"Bandwidth: {bandwidth_value}")
+            current_power_label.set_text(f"Power: {power_value}")
 
-        # Update the labels with the current data
-        #current_freq_label.set_text(f"Frequency: {frequency_value}")
-        #current_bw_label.set_text(f"Bandwidth: {bandwidth_value}")
-        #current_power_label.set_text(f"Power: {power_value}")
+            ui.notify(f"Frequency: {frequency_value}\nBandwidth: {bandwidth_value}\nPower: {power_value}", type='info')
 
-        ui.notify(f"Frequency: {frequency_value}\nBandwidth: {bandwidth_value}\nPower: {power_value}", type='info')
+        update_ui()
+
     except subprocess.TimeoutExpired:
-        ui.notify("No data received within 30 seconds. Operation timed out.", type='error')
-        clear_console()
+        @run_on_ui_thread
+        def notify_error():
+            ui.notify("No data received within 30 seconds. Operation timed out.", type='error')
+            clear_console()
+
+        notify_error()
+
     except Exception as e:
-        ui.notify(f"An error occurred: {e}", type='error')
-        clear_console()
+        @run_on_ui_thread
+        def notify_exception():
+            ui.notify(f"An error occurred: {e}", type='error')
+            clear_console()
+
+        notify_exception()
 
 # Define UI components
 with ui.column().classes('items-stretch') as main_column:
