@@ -1,4 +1,4 @@
-from nicegui import ui, app
+from nicegui import ui, run
 import subprocess
 import threading
 import json
@@ -192,4 +192,4 @@ with ui.column().classes('items-stretch') as main_column:
     output_text = ui.textarea().props('rows=10')
 
 # Run the NiceGUI app
-app.run()
+run(port=8080)
