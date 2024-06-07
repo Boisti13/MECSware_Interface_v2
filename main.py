@@ -193,4 +193,4 @@ with ui.column().classes('items-stretch') as main_column:
     output_text = ui.textarea().props('rows=10')
 
 # Run the NiceGUI app
-ui.run()
+ui.run(port=8082)
