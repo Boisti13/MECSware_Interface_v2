@@ -175,6 +175,8 @@ with ui.column().classes('items-stretch') as main_column:
     with ui.grid(columns=3):
         ui.label('')
         ui.label('Current Settings').classes('text-h6')
+        ui.label('Desired Settings').classes('text-h6')
+
         ui.label('Frequency:')
         ui.label(frequency_value)
         freq_combobox = ui.select(freq_options, value=freq_initial)
@@ -182,17 +184,13 @@ with ui.column().classes('items-stretch') as main_column:
         current_bw_label = ui.label('Bandwidth:')
         ui.label('bandwidth_value')
         bw_combobox = ui.select(bw_options, value=bw_initial)
+
         ui.label('Ratio:')
         ui.label('')
         ratio_combobox = ui.select(ratio_options, value=ratio_initial)
-        current_power_label = ui.label('Power:')
 
-        
-        
-        
-        
-        
-       
+        current_power_label = ui.label('Power:')
+        ui.label('power_value')
         power_combobox = ui.select(power_options, value=power_initial)
 
 
