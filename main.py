@@ -193,10 +193,7 @@ with ui.column().classes('items-stretch') as main_column:
         ui.label('power_value')
         power_combobox = ui.select(power_options, value=power_initial)
 
-
-
-    
-    with ui.row():
+        ui.label('')
         ui.button('Get Current Data', on_click=get_current_data)
         ui.button('Submit Command', on_click=submit_command)
     
