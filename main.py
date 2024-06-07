@@ -200,7 +200,7 @@ with ui.column().classes('items-stretch') as main_column:
         ui.button('Get Current Data', on_click=get_current_data)
         ui.button('Submit Command', on_click=submit_command)
     
-    output_text = ui.textarea().props('rows=10')
+    output_text = ui.textarea().props('rows=10').style('background-color: black; color: white;')
 
 # Run the NiceGUI app
 ui.run(port=8082)
