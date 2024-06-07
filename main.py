@@ -141,9 +141,9 @@ def get_current_data():
         power_value = data.get("tx_power", "")
 
         # Update the labels with the current data
-        current_freq_label.set_text(f"Frequency: {frequency_value}")
-        current_bw_label.set_text(f"Bandwidth: {bandwidth_value}")
-        current_power_label.set_text(f"Power: {power_value}")
+        #current_freq_label.set_text(f"Frequency: {frequency_value}")
+        #current_bw_label.set_text(f"Bandwidth: {bandwidth_value}")
+        #current_power_label.set_text(f"Power: {power_value}")
 
         ui.notify(f"Frequency: {frequency_value}\nBandwidth: {bandwidth_value}\nPower: {power_value}", type='info')
     except subprocess.TimeoutExpired:
