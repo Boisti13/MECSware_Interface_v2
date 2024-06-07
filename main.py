@@ -154,7 +154,7 @@ def get_current_data():
         clear_console()
 
 # Define UI components
-with ui.column().classes('items-stretch') as main_column:
+with ui.column():
     #ui.label('MECSware Interface').classes('text-h4')
     
     with ui.row():
