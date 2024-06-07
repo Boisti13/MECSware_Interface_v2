@@ -1,5 +1,4 @@
 from nicegui import ui
-
 import subprocess
 import threading
 import json
@@ -66,32 +65,32 @@ def execute_put_command():
         output = result.stdout
 
         # Schedule UI updates on the main thread
-        ui.schedule(update_ui(output))
+        ui.update(lambda: update_ui(output))
 
     except subprocess.TimeoutExpired:
-        ui.schedule(notify_error("No data received within 30 seconds. Operation timed out."))
+        ui.update(lambda: notify_error("No data received within 30 seconds. Operation timed out."))
 
     except Exception as e:
-        ui.schedule(notify_exception(f"An error occurred: {e}"))
+        ui.update(lambda: notify_exception(f"An error occurred: {e}"))
 
 def update_ui(output):
     def _update_ui():
         output_text.set_value(output)
         if "data received" in output.lower():
             output_text.set_value("")
-    return _update_ui
+    ui.timer(0, _update_ui, once=True)
 
 def notify_error(message):
     def _notify_error():
         ui.notify(message, type='error')
         clear_console()
-    return _notify_error
+    ui.timer(0, _notify_error, once=True)
 
 def notify_exception(message):
     def _notify_exception():
         ui.notify(message, type='error')
         clear_console()
-    return _notify_exception
+    ui.timer(0, _notify_exception, once=True)
 
 def ping_test():
     """Function to execute a ping test to the provided IP address."""
@@ -104,10 +103,10 @@ def ping_test():
         output = result.stdout
 
         # Schedule UI updates on the main thread
-        ui.schedule(update_ui_ping(output, result.returncode))
+        ui.update(lambda: update_ui_ping(output, result.returncode))
 
     except Exception as e:
-        ui.schedule(notify_exception(f"An error occurred: {e}"))
+        ui.update(lambda: notify_exception(f"An error occurred: {e}"))
 
 def update_ui_ping(output, returncode):
     def _update_ui_ping():
@@ -116,17 +115,17 @@ def update_ui_ping(output, returncode):
             ui.notify("Ping successful!", type='info')
         else:
             ui.notify("Ping failed!", type='error')
-    return _update_ui_ping
+    ui.timer(0, _update_ui_ping, once=True)
 
 def submit_command():
     """Function to submit a command and show a confirmation message."""
     trigger_terminal_command_submit_data()
-    ui.schedule(notify_success("Terminal command executed successfully."))
+    ui.update(lambda: notify_success("Terminal command executed successfully."))
 
 def notify_success(message):
     def _notify_success():
         ui.notify(message, type='info')
-    return _notify_success
+    ui.timer(0, _notify_success, once=True)
 
 def ping_command():
     """Function to start the ping test in a separate thread."""
@@ -159,13 +158,13 @@ def get_current_data():
         output = result.stdout
 
         # Schedule UI updates on the main thread
-        ui.schedule(update_ui_get_data(output))
+        ui.update(lambda: update_ui_get_data(output))
 
     except subprocess.TimeoutExpired:
-        ui.schedule(notify_error("No data received within 30 seconds. Operation timed out."))
+        ui.update(lambda: notify_error("No data received within 30 seconds. Operation timed out."))
 
     except Exception as e:
-        ui.schedule(notify_exception(f"An error occurred: {e}"))
+        ui.update(lambda: notify_exception(f"An error occurred: {e}"))
 
 def update_ui_get_data(output):
     def _update_ui_get_data():
@@ -180,7 +179,7 @@ def update_ui_get_data(output):
         current_power_label.set_text(f"Power: {power_value}")
 
         ui.notify(f"Frequency: {frequency_value}\nBandwidth: {bandwidth_value}\nPower: {power_value}", type='info')
-    return _update_ui_get_data
+    ui.timer(0, _update_ui_get_data, once=True)
 
 # Define UI components
 with ui.column().classes('items-stretch') as main_column:
